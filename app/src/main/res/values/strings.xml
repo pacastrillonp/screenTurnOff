@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TurnOffScream</string>
+    <string name="turn_on">Turn On</string>
+    <string name="turn_off">Turn Off</string>
+    <string name="sample_device_admin">Device Admin</string>
+    <string name="admin_receiver_status">status</string>
+</resources>
