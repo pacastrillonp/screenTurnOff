@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.PowerManager
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.databinding.DataBindingUtil
@@ -21,7 +22,6 @@ import co.pacastrillonp.turnoffscream.utils.DeviceAdmin
 import co.pacastrillonp.turnoffscream.viewmodel.MainActivityViewModel
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
-
 
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -63,6 +63,15 @@ class MainActivity : DaggerAppCompatActivity() {
 
     }
 
+
+    fun brightnessOffScream() {
+        val layout = window.attributes
+        layout.screenBrightness = 1f
+        window.attributes = layout
+
+//        changeScreenBrightness(context, 0)
+    }
+
     override fun onPause() {
         super.onPause()
         val handler = Handler()
@@ -71,19 +80,14 @@ class MainActivity : DaggerAppCompatActivity() {
         }, 10000)
     }
 
-    @SuppressLint("InvalidWakeLockTag", "WakelockTimeout")
-    fun turnOnScream() {
-        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-        val appKeyguardManager = keyguardManager.newKeyguardLock("MyKeyguardLock")
-        appKeyguardManager.disableKeyguard()
 
-        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        val wakeLock = powerManager.newWakeLock(
-            PowerManager.FULL_WAKE_LOCK
-                    or PowerManager.ACQUIRE_CAUSES_WAKEUP
-                    or PowerManager.ON_AFTER_RELEASE, "MyWakeLock"
-        )
-        wakeLock.acquire()
+    fun turnOnScream() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            keyguardManager.requestDismissKeyguard(this, null)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

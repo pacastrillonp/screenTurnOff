@@ -1,5 +1,6 @@
 package co.pacastrillonp.turnoffscream.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
@@ -22,8 +23,8 @@ class MainActivityViewModel @Inject constructor(private val context: Context) : 
 
     //    private lateinit var sensorManager: SensorManager
     private lateinit var powerManager: PowerManager
-//    private lateinit var windowManager: WindowManager
-//    private lateinit var wakeManager: PowerManager.WakeLock
+    //    private lateinit var windowManager: WindowManager
+    private lateinit var wakeManager: PowerManager.WakeLock
 
     private lateinit var devicePolicyManager: DevicePolicyManager
     private lateinit var activityManager: ActivityManager
@@ -45,7 +46,7 @@ class MainActivityViewModel @Inject constructor(private val context: Context) : 
 
     // Outputs
     private val _canTurnOnOutput = MediatorLiveData<Boolean>().apply {
-        value = false
+        value = true
     }
     val canTurnOnOutput: LiveData<Boolean> get() = _canTurnOnOutput
 
@@ -64,19 +65,29 @@ class MainActivityViewModel @Inject constructor(private val context: Context) : 
             } else {
                 Toast.makeText(context, "You need to enable the Admin Device Features", Toast.LENGTH_SHORT).show()
             }
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+    @SuppressLint("InvalidWakeLockTag")
     fun turnOnScream() {
+        try {
+            powerManager = (context.getSystemService(POWER_SERVICE) as PowerManager?)!!
+            wakeManager = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Your Tag")
+            wakeManager.acquire(2000)
+            wakeManager.release()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
     fun brightnessOffScream() {
-        changeScreenBrightness(context, 0)
+
+
+//        changeScreenBrightness(context, 0)
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
